@@ -52,8 +52,8 @@ management:
 # App-level config (we'll add JWT secret here later)
 app:
   jwt:
-    secret: "placeholder-will-replace-with-real-secret-in-day2"
-    expiration-ms: 86400000   # 24 hours
+    secret: "3d7b9f2a8e1c4d6f0a5b2e8f1d4c7a9b3e6f2d5a8c1b4e7f0d3a6b9c2e5f8a1d"
+    expiration-ms: 86400000  # 24 hours
 
 logging:
   level:
@@ -61,3 +61,9 @@ logging:
     org.springframework.security: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+app:
+  base-url: http://localhost:8080
+  jwt:
+    secret: "3d7b9f2a8e1c4d6f0a5b2e8f1d4c7a9b3e6f2d5a8c1b4e7f0d3a6b9c2e5f8a1d"
+    expiration-ms: 86400000

@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 # A "network" lets our containers talk to each other by service name.
 # Our Spring Boot app will connect to "mongodb", "redis", "kafka" —
