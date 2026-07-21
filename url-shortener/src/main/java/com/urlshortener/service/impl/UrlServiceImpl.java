@@ -113,9 +113,9 @@ public class UrlServiceImpl implements UrlService {
             throw new ResourceNotFoundException("URL has expired");
         }
 
-        // Increment click count
-        url.setClickCount(url.getClickCount() + 1);
-        urlRepository.save(url);
+        // // Increment click count
+        // url.setClickCount(url.getClickCount() + 1);
+        // urlRepository.save(url);
 
         return url.getOriginalUrl();
     }
