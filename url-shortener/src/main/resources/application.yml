@@ -12,6 +12,7 @@ spring:
       uri: mongodb://admin:password@localhost:27017/urlshortener?authSource=admin
       database: urlshortener
 
+
     redis:
       host: localhost
       port: 6379
@@ -50,10 +51,10 @@ management:
       show-details: always
 
 # App-level config (we'll add JWT secret here later)
-app:
-  jwt:
-    secret: "3d7b9f2a8e1c4d6f0a5b2e8f1d4c7a9b3e6f2d5a8c1b4e7f0d3a6b9c2e5f8a1d"
-    expiration-ms: 86400000  # 24 hours
+# app:
+#   jwt:
+#     secret: "3d7b9f2a8e1c4d6f0a5b2e8f1d4c7a9b3e6f2d5a8c1b4e7f0d3a6b9c2e5f8a1d"
+#     expiration-ms: 86400000  # 24 hours
 
 logging:
   level:
