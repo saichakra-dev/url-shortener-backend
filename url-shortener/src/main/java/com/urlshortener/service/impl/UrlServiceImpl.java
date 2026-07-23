@@ -13,11 +13,13 @@ import com.urlshortener.dto.response.UrlResponse;
 import com.urlshortener.exception.DuplicateResourceException;
 import com.urlshortener.exception.ResourceNotFoundException;
 import com.urlshortener.repository.UrlRepository;
+import com.urlshortener.service.CacheService;
 import com.urlshortener.service.UrlService;
 import com.urlshortener.util.Base62Encoder;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 
 @Slf4j
 @Service
@@ -26,6 +28,7 @@ public class UrlServiceImpl implements UrlService {
 
     private final UrlRepository urlRepository;
     private final Base62Encoder base62Encoder;
+    private final CacheService cacheService;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -87,38 +90,46 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public void deleteUrl(String id, String userId) {
-        Url url = urlRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("URL not found"));
+public void deleteUrl(String id, String userId) {
+    Url url = urlRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("URL not found"));
 
-        if (!url.getCreatedBy().equals(userId)) {
-            throw new ResourceNotFoundException("URL not found");
-        }
-
-        urlRepository.delete(url);
-        log.info("Deleted URL: {} by user: {}", id, userId);
+    if (!url.getCreatedBy().equals(userId)) {
+        throw new ResourceNotFoundException("URL not found");
     }
 
+    urlRepository.delete(url);
+    cacheService.evictUrl(url.getShortCode());  // invalidate cache
+    log.info("Deleted URL: {} by user: {}", id, userId);
+}
+   
     @Override
-    public String resolveShortCode(String shortCode) {
-        Url url = urlRepository.findByShortCode(shortCode)
-                .orElseThrow(() -> new ResourceNotFoundException("URL not found"));
+public String resolveShortCode(String shortCode) {
 
-        if (url.getStatus() != UrlStatus.ACTIVE) {
-            throw new ResourceNotFoundException("URL is not active");
-        }
-
-        if (url.getExpiresAt() != null
-                && url.getExpiresAt().isBefore(Instant.now())) {
-            throw new ResourceNotFoundException("URL has expired");
-        }
-
-        // Increment click count
-        url.setClickCount(url.getClickCount() + 1);
-        urlRepository.save(url);
-
-        return url.getOriginalUrl();
+    // 1. Check cache first
+    String cachedUrl = cacheService.getCachedUrl(shortCode);
+    if (cachedUrl != null) {
+        return cachedUrl;           // cache HIT — return immediately
     }
+
+    // 2. Cache MISS — query MongoDB
+    Url url = urlRepository.findByShortCode(shortCode)
+            .orElseThrow(() -> new ResourceNotFoundException("URL not found"));
+
+    if (url.getStatus() != UrlStatus.ACTIVE) {
+        throw new ResourceNotFoundException("URL is not active");
+    }
+
+    if (url.getExpiresAt() != null
+            && url.getExpiresAt().isBefore(Instant.now())) {
+        throw new ResourceNotFoundException("URL has expired");
+    }
+
+    // 3. Store in cache for next time
+    cacheService.cacheUrl(shortCode, url.getOriginalUrl());
+
+    return url.getOriginalUrl();
+}
 
     private UrlResponse toResponse(Url url) {
         return UrlResponse.builder()

@@ -59,4 +59,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("An unexpected error occurred"));
     }
+    @ExceptionHandler(RateLimitExceededException.class)
+public ResponseEntity<ApiResponse<Void>> handleRateLimit(
+        RateLimitExceededException ex) {
+    log.warn("Rate limit exceeded: {}", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+            .body(ApiResponse.error(ex.getMessage()));
+}
 }
