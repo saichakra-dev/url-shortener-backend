@@ -67,7 +67,7 @@ public class UrlServiceImpl implements UrlService {
                 .build();
 
         Url saved = urlRepository.save(url);
-        log.info("Created short URL: {} for user: {}", shortCode, userId);
+        log.info("[BRANCH-A] Short URL created: {} by user: {}", shortCode, userId);
         return toResponse(saved);
     }
 
