@@ -14,6 +14,7 @@ import com.urlshortener.exception.DuplicateResourceException;
 import com.urlshortener.exception.ResourceNotFoundException;
 import com.urlshortener.repository.UrlRepository;
 import com.urlshortener.service.CacheService;
+import com.urlshortener.service.RateLimitService;
 import com.urlshortener.service.UrlService;
 import com.urlshortener.util.Base62Encoder;
 
@@ -29,12 +30,14 @@ public class UrlServiceImpl implements UrlService {
     private final UrlRepository urlRepository;
     private final Base62Encoder base62Encoder;
     private final CacheService cacheService;
+    private final RateLimitService rateLimitService;
 
     @Value("${app.base-url}")
     private String baseUrl;
 
     @Override
     public UrlResponse createUrl(CreateUrlRequest request, String userId) {
+        rateLimitService.checkRateLimit(userId);
         String alias = request.customAlias();
 
         // Check duplicate alias
@@ -64,7 +67,7 @@ public class UrlServiceImpl implements UrlService {
                 .build();
 
         Url saved = urlRepository.save(url);
-        log.info("Created short URL: {} for user: {}", shortCode, userId);
+        log.info("[BRANCH-A] Short URL created: {} by user: {}", shortCode, userId);
         return toResponse(saved);
     }
 
