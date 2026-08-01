@@ -1,0 +1,23 @@
+spring:
+  data:
+    mongodb:
+      database: urlshortener-test
+  kafka:
+    listener:
+      auto-startup: false
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 7.0.2
+
+app:
+  base-url: http://localhost:8080
+  jwt:
+    secret: "3d7b9f2a8e1c4d6f0a5b2e8f1d4c7a9b3e6f2d5a8c1b4e7f0d3a6b9c2e5f8a1d"
+    expiration-ms: 86400000
+
+logging:
+  level:
+    com.urlshortener: DEBUG

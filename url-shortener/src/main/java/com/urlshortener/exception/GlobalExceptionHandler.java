@@ -2,8 +2,8 @@ package com.urlshortener.exception;
 
 import java.util.stream.Collectors;
 
-import org.apache.kafka.common.errors.DuplicateResourceException;
-import org.apache.kafka.common.errors.ResourceNotFoundException;
+import com.urlshortener.exception.DuplicateResourceException;
+import com.urlshortener.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -11,6 +11,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.dao.DuplicateKeyException;
 
 import com.urlshortener.dto.response.ApiResponse;
 
@@ -33,6 +34,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ApiResponse.error(ex.getMessage()));
     }
+    @ExceptionHandler(DuplicateKeyException.class)
+public ResponseEntity<ApiResponse<Void>> handleMongoDbDuplicate(DuplicateKeyException ex) {
+    log.warn("Duplicate key error: {}", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+            .body(ApiResponse.error("Resource already exists"));
+}
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException ex) {
