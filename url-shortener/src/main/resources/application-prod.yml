@@ -7,7 +7,7 @@ spring:
       url: ${REDIS_URL}
       # ssl:
       #   enabled: true
-      # host: ${REDIS_HOST}
+      # host: ${REDIS_HOST} 
       # port: ${REDIS_PORT:6379}
       # password: ${REDIS_PASSWORD}
       # ssl:
@@ -49,7 +49,7 @@ management:
         include: health,info
   endpoint:
     health:
-      show-details: never
+      show-details: always
 
 logging:
   level:
