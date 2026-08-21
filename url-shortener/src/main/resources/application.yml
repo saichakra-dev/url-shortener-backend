@@ -2,19 +2,15 @@ spring:
   application:
     name: url-shortener
 
-  # Active profile — override with env var in production:
-  # SPRING_PROFILES_ACTIVE=prod
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
 
   data:
     mongodb:
-       uri: ${MONGODB_URI:mongodb://urlshortener:zu6QRHUQM4a4jKKy@cluster0.xh1odgj.mongodb.net/urlshortener?appName=Cluster0}
-      #  database: urlshortener
-
+      uri: ${MONGODB_URI:mongodb://admin:password@localhost:27017/urlshortener?authSource=admin}
 
     redis:
-      url: ${REDIS_URL=redis://localhost:6379}
+      url: ${REDIS_URL:redis://localhost:6379}
       timeout: 2000ms
       lettuce:
         pool:
@@ -23,7 +19,7 @@ spring:
           min-idle: 2
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -36,23 +32,16 @@ spring:
         spring.json.trusted.packages: "com.urlshortener.*"
 
 server:
-  port: 8080
+  port: ${PORT:8080}
 
-# Actuator — expose health endpoint
 management:
   endpoints:
     web:
       exposure:
-        include: health, info, metrics
+        include: health,info,metrics
   endpoint:
     health:
       show-details: always
-
-# App-level config (we'll add JWT secret here later)
-# app:
-#   jwt:
-#     secret: "3d7b9f2a8e1c4d6f0a5b2e8f1d4c7a9b3e6f2d5a8c1b4e7f0d3a6b9c2e5f8a1d"
-#     expiration-ms: 86400000  # 24 hours
 
 logging:
   level:
@@ -62,7 +51,8 @@ logging:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
 app:
-  base-url: http://localhost:8080
+  base-url: ${APP_BASE_URL:http://localhost:8080}
   jwt:
-    secret: "3d7b9f2a8e1c4d6f0a5b2e8f1d4c7a9b3e6f2d5a8c1b4e7f0d3a6b9c2e5f8a1d"
-    expiration-ms: 86400000
+    secret: ${JWT_SECRET:3d7b9f2a8e1c4d6f0a5b2e8f1d4c7a9b3e6f2d5a8c1b4e7f0d3a6b9c2e5f8a1d}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+    
