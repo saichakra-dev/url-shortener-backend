@@ -9,7 +9,7 @@ spring:
 
   data:
     mongodb:
-       uri: ${MONGODB_URI=mongodb://urlshortener:zu6QRHUQM4a4jKKy@cluster0.xh1odgj.mongodb.net/?appName=Cluster0}
+       uri: ${MONGODB_URI:mongodb://urlshortener:zu6QRHUQM4a4jKKy@cluster0.xh1odgj.mongodb.net/urlshortener?appName=Cluster0}
       #  database: urlshortener
 
 
